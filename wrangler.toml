@@ -1,0 +1,56 @@
+name = "opencode-worker-v2"
+main = "packages/opencode-worker/src/index.ts"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Durable Object bindings
+[[durable_objects.bindings]]
+name = "SESSION_DO"
+class_name = "SessionDO"
+
+[[durable_objects.bindings]]
+name = "SPACE_DO"
+class_name = "SpaceDO"
+
+# Worker loader for deploy engine (Dynamic Workers)
+[[worker_loaders]]
+binding = "LOADER"
+
+# DO migrations
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["SessionDO"]
+
+[[migrations]]
+tag = "v2"
+new_sqlite_classes = ["SpaceDO"]
+
+# Observability: logs, traces, invocation logs
+[observability]
+enabled = true
+head_sampling_rate = 1
+
+  [observability.logs]
+  enabled = true
+  invocation_logs = true
+  head_sampling_rate = 1
+
+  [observability.traces]
+  enabled = true
+  head_sampling_rate = 1
+
+# Environment variables (non-secret defaults)
+[vars]
+ENVIRONMENT = "development"
+
+# Secrets (set via `wrangler secret put`):
+# SERVER_PASSWORD       - Basic auth password for the API
+# ANTHROPIC_API_KEY     - Anthropic API key
+# OPENAI_API_KEY        - OpenAI API key
+# GOOGLE_API_KEY        - Google AI API key
+#
+# Cloudflare AI Gateway (provider: "cloudflare-ai-gateway")
+# Matches upstream opencode env var names:
+# CLOUDFLARE_ACCOUNT_ID - Cloudflare account ID
+# CLOUDFLARE_GATEWAY_ID - AI Gateway gateway ID / slug
+# CLOUDFLARE_API_TOKEN  - Cloudflare API token (or CF_AIG_TOKEN)
